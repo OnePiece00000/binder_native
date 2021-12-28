@@ -24,11 +24,24 @@ namespace android {
     int XXXXService::setSomething(int a) {
         ALOGD(" XXXXService::setSomething a = %d myParam %d", a, myParam);
         myParam += a;
+        //Let's trigger callback
+        if(mCallback != NULL) {
+            ALOGD("will notify???");
+            mCallback->notifyCallback(myParam);
+        } else {
+            ALOGW("mCallback is NULL");
+        }
         return 0;//OK
     }
     int XXXXService::getSomething() {
         ALOGD("#XXXXService::getSomething myParam = %d", myParam);
         return myParam;
+    }
+
+    int XXXXService::setCallback(const sp<ICallback>& callback) {
+      ALOGD(" XXXXService::setCallback");
+      mCallback = callback;
+      return 0;
     }
 }
 

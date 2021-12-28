@@ -2,6 +2,7 @@
 #include <binder/IServiceManager.h>
 #include <cutils/log.h>
 #include <android/log.h>
+#include "Callback.h"
 #include "../interface/IXXXXService.h"
 
 #ifdef LOG_NDEBUG
@@ -42,6 +43,8 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    sp<Callback> c = new Callback();
+    mXXXXService->setCallback(c);
     while(1) {
         mXXXXService->setSomething(1);
         sleep(1);

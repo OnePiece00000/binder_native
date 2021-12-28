@@ -6,7 +6,8 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES:= \
         main_XXXXService.cpp \
         XXXXService.cpp \
-        ../interface/IXXXXService.cpp
+        ../interface/IXXXXService.cpp \
+        ../interface/ICallback.cpp
 
 LOCAL_SHARED_LIBRARIES := \
         libcutils libutils libbinder libdl liblog

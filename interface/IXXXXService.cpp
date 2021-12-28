@@ -1,6 +1,11 @@
 #include "IXXXXService.h"
 #include <binder/Parcel.h>
 #include <binder/IInterface.h>
+
+#include <binder/IPCThreadState.h>
+#include <utils/threads.h>
+
+#include "ICallback.h"
 #include <utils/Log.h>
 
 #ifdef LOG_NDEBUG
@@ -18,6 +23,7 @@ namespace android {
 enum {
     SET_SOMETHING = IBinder::FIRST_CALL_TRANSACTION,
     GET_SOMETHING,
+    SET_CALLBACK
 };
 
 //------------------------------------proxy side--------------------------------
@@ -41,10 +47,17 @@ public:
         remote()->transact(GET_SOMETHING,data,&reply);
         return reply.readInt32();
     }
-};
-//---------------------- interface--------------------
-IMPLEMENT_META_INTERFACE(XXXXService, "chenxf.binder.IXXXXService");
+    virtual int setCallback(const sp<ICallback>& callback) {
+      ALOGD("BpXXXXService::setCallback");
+      Parcel data, reply;
+      data.writeStrongBinder(callback->asBinder(callback));// TODO: important
+      remote()->transact(SET_CALLBACK, data, &reply);
+      return reply.readInt32();
+    }
 
+};
+
+IMPLEMENT_META_INTERFACE(XXXXService, "chenxf.binder.IXXXXService");
 
 //------------------------------------server side--------------------------------
 status_t BnXXXXService::onTransact (
@@ -60,8 +73,16 @@ status_t BnXXXXService::onTransact (
             reply->writeInt32(getSomething());
             return NO_ERROR;
         } break;
+        case SET_CALLBACK: {
+            ALOGD("BnXXXXService::onTransact  SET_CALLBACK ");
+            sp<ICallback> callback = interface_cast<ICallback>(data.readStrongBinder());// TODO: important!
+            reply->writeInt32(setCallback(callback));
+            return NO_ERROR;
+        }
     }
+
     return BBinder::onTransact(code, data, reply, flags);
 }
+
 }
 
